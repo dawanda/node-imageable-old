@@ -3,6 +3,7 @@ var express = require('express')
 var app = module.exports = express.createServer()
 var config = JSON.parse(require('fs').readFileSync(__dirname + '/config/config.json'))
 var exec = require('child_process').exec
+var im = require('./lib/image-magick.js')
 
 // Configuration
 app.configure(function(){
@@ -19,37 +20,17 @@ app.configure('production', function(){
   app.use(express.errorHandler())
 })
 
-// Magick
-
-function rand(number){
-  return parseInt(Math.random() * number);
-}
-
-function resizeImage(url, geometry, callback) {
-  var temp = [__dirname, "tmp", rand(99999999).toString()].join('/')
-  var command = ["convert -strip -resize", geometry, url, temp].join(" ")
-  console.log(command)
-  exec(command, function (err, stdout, stderr) {
-    callback(err, temp)
-  });
-}
-
 // Routes
 app.get('/', function(req, res){
   res.send('Hello World from node-imageable');
 })
 
 app.get(/^\/resize.*/, function(req, res){
-  resizeImage(req.param('url'), req.param('size'), function(err, path){
-    console.log(path)
-    console.log(err)
+  im.resize(req.param('url'), req.param('size'), function(err, path){
     if(err) return // render 500
-    console.log('asd')
-    res.contentType('tmp/text2.gif')
-//    res.contentType('image/gif')
-//    res.send(require('fs').readFileSync(path))
-
-    res.sendfile(path)
+    res.contentType('image/gif')
+    res.send(require('fs').readFileSync(path))
+//    res.sendfile(path)
   })
 })
 
