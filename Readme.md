@@ -31,6 +31,11 @@ To make sure nobody missuses your image-server you can enable hashing in the con
     # RUBY
     TODO
 
+# TODO
+
+ - add crop
+ - test cannot write response body in correct encoding for identify
+
 # Authors
 
 DaWanda Gmbh
