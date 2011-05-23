@@ -22,8 +22,7 @@ app.hashMatches = function(hash, data){
 function sendImage(err, res, path){
   if(err) return // render 500
   res.contentType(path)
-  res.send(require('fs').readFileSync(path))
-//  res.sendfile(path)
+  res.sendfile(path)
 }
 
 // Configuration
