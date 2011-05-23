@@ -5,6 +5,13 @@ var config = JSON.parse(require('fs').readFileSync(__dirname + '/config/config.j
 var exec = require('child_process').exec
 var im = require('./lib/image-magick.js')
 
+function sendImage(err, res, path){
+  if(err) return // render 500
+  res.contentType('image/gif')
+  res.send(require('fs').readFileSync(path))
+//    res.sendfile(path)
+}
+
 // Configuration
 app.configure(function(){
   app.use(express.bodyParser())
@@ -26,13 +33,23 @@ app.get('/', function(req, res){
 })
 
 app.get(/^\/resize.*/, function(req, res){
-  im.resize(req.param('url'), req.param('size'), function(err, path){
-    if(err) return // render 500
-    res.contentType('image/gif')
-    res.send(require('fs').readFileSync(path))
-//    res.sendfile(path)
+  im.convert('resize', req.param('url'), req.param('size'), function(err, path){
+    sendImage(err, res, path)
   })
 })
+
+app.get(/^\/fit.*/, function(req, res){
+  im.convert('fit', req.param('url'), req.param('size'), function(err, path){
+    sendImage(err, res, path)
+  })
+})
+
+//app.get(/^\/crop.*/, function(req, res){
+//  im.convert('crop', req.param('url'), req.param('size'), function(err, path){
+//    sendImage(err, res, path)
+//  })
+//})
+
 
 // Only listen on $ node app.js
 if (!module.parent) {

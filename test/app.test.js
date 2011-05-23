@@ -22,12 +22,22 @@ module.exports = {
       { status: 200, headers: { 'Content-Type': 'image/gif' }},
       function(res){
         assert.equal(res.body.length, 6620)
+//        done()
 //        var path = [process.cwd(), 'tmp', 'test.gif'].join('/')
 //        fs.writeFileSync(path, res.body)
 //        exec("identify "+path, function(err, stdout){
 //          assert.equal(stdout, '200x400')
 //          done()
 //        })
+      });
+  },
+
+  'simple fit works': function(done){
+    assert.response(app,
+      { url: '/fit?url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&size=200x400' },
+      { status: 200, headers: { 'Content-Type': 'image/gif' }},
+      function(res){
+        assert.equal(res.body.length, 18035)
       });
   }
 };
