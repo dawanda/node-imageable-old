@@ -32,25 +32,13 @@ app.get('/', function(req, res){
   res.send('Hello World from node-imageable');
 })
 
-app.get(/^\/resize.*/, function(req, res){
-  im.convert('resize', req.query['url'], req.query, function(err, path){
+var modify = /(resize|crop|fit)/
+app.get(modify, function(req, res) {
+  var method = req.originalUrl.match(modify)[1]
+  im.convert(method, req.query['url'], req.query, function(err, path){
     sendImage(err, res, path)
   })
 })
-
-app.get(/^\/fit.*/, function(req, res){
-  im.convert('fit', req.query['url'], req.query, function(err, path){
-    sendImage(err, res, path)
-  })
-})
-
-app.get(/^\/crop.*/, function(req, res){
-  console.log(req.query)
-  im.convert('crop', req.query['url'], req.query, function(err, path){
-    sendImage(err, res, path)
-  })
-})
-
 
 // Only listen on $ node app.js
 if (!module.parent) {
