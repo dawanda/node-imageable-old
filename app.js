@@ -4,6 +4,7 @@ var app = module.exports = express.createServer()
 var config = JSON.parse(require('fs').readFileSync(__dirname + '/config/config.json'))
 var exec = require('child_process').exec
 var im = require('./lib/image-magick.js')
+var reporter = require('./lib/reporter.js')
 
 app.hash = function(data){
   return require('crypto').createHash('md5').update(data+config.secret).digest("hex").slice(0,8)
@@ -49,6 +50,8 @@ app.get('/', function(req, res){
 
 var modify = /^\/(resize|crop|fit)(\/([^\/\?]+))?/ // resize/hash/...
 app.get(modify, function(req, res) {
+  var start = +new Date()
+
   var match = req.originalUrl.match(modify)
   var method = match[1]
   var hash = match[3]
@@ -56,6 +59,7 @@ app.get(modify, function(req, res) {
 
   if (app.hashMatches(hash, query)){
     im.convert(method, req.query['url'], req.query, function(err, path){
+      reporter.timing('request', +new Date() - start)
       sendImage(err, res, path)
     })
   } else {
@@ -67,4 +71,5 @@ app.get(modify, function(req, res) {
 if (!module.parent) {
   app.listen(config.port)
   console.log("Express server listening on port %d", app.address().port)
+  reporter.startReporting()
 }
