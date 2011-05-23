@@ -46,5 +46,26 @@ module.exports = {
       function(res){
         assert.equal(res.body.length, 6825)
       });
+  },
+
+  'can resize when hash matches': function(done){
+    var query = 'url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&crop=200x400%2B10%2B10'
+    var hash = app.hash(query)
+
+    assert.response(app,
+      { url: '/crop/'+hash+'?'+query },
+      {},
+      function(res){
+        assert.equal(res.body.length, 6825)
+      });
+  },
+
+  'cannot resize when hash does not match': function(done){
+    assert.response(app,
+      { url: '/crop/asdeasd?url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&crop=200x400%2B10%2B10' },
+      {},
+      function(res){
+        assert.includes(res.body, "Hash")
+      });
   }
 };

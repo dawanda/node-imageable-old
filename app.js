@@ -4,13 +4,16 @@ var app = module.exports = express.createServer()
 var config = JSON.parse(require('fs').readFileSync(__dirname + '/config/config.json'))
 var exec = require('child_process').exec
 var im = require('./lib/image-magick.js')
-var crypto = require('crypto')
+
+app.hash = function(data){
+  return require('crypto').createHash('md5').update(data+config.secret).digest("hex").slice(0,8)
+}
 
 app.hashMatches = function(hash, data){
   if(config.magic_hash == hash)return true;
   if(config.secret.toString().length == 0)return true;
 
-  var generatedHash = crypto.createHash('md5').update(data+config.secret).digest("hex").slice(0,8)
+  var generatedHash = app.hash(data)
   if(generatedHash == hash) return true;
 
   return false;
@@ -46,11 +49,11 @@ app.get('/', function(req, res){
 var modify = /^\/(resize|crop|fit)(\/(([^\/\?]+)(\/[^\?]+)?))?/ // resize/hash/title.jpg
 app.get(modify, function(req, res) {
   var match = req.originalUrl.match(modify)
-  console.log(match)
   var method = match[1]
   var hash = match[4]
-  var title = match[6] || hash
-  var query = req.originalUrl.match(/\?(.*)/)
+//  var title = match[6] || hash
+  var query = req.originalUrl.match(/\?(.*)/)[1]
+
   if (app.hashMatches(hash, query)){
     var method = req.originalUrl.match(modify)[1]
     im.convert(method, req.query['url'], req.query, function(err, path){
