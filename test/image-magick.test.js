@@ -27,5 +27,13 @@ module.exports = {
         assert.includes(stdout, '10x15')
       })
     })
+  },
+
+  'crop with resize': function(){
+    im.convert('crop', 'test/test.gif', {crop: '10x15+20+25', size: '100x20'}, function(err, path){
+      exec("identify "+path, function(err, stdout){
+        assert.includes(stdout, '100x20')
+      })
+    })
   }
 };
