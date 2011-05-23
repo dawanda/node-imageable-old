@@ -4,6 +4,17 @@ var app = module.exports = express.createServer()
 var config = JSON.parse(require('fs').readFileSync(__dirname + '/config/config.json'))
 var exec = require('child_process').exec
 var im = require('./lib/image-magick.js')
+var crypto = require('crypto')
+
+app.hashMatches = function(hash, data){
+  if(config.magic_hash == hash)return true;
+  if(config.secret.toString().length == 0)return true;
+
+  var generatedHash = crypto.createHash('md5').update(data+config.secret).digest("hex").slice(0,8)
+  if(generatedHash == hash) return true;
+
+  return false;
+}
 
 function sendImage(err, res, path){
   if(err) return // render 500
@@ -32,12 +43,22 @@ app.get('/', function(req, res){
   res.send('Hello World from node-imageable');
 })
 
-var modify = /(resize|crop|fit)/
+var modify = /^\/(resize|crop|fit)(\/(([^\/\?]+)(\/[^\?]+)?))?/ // resize/hash/title.jpg
 app.get(modify, function(req, res) {
-  var method = req.originalUrl.match(modify)[1]
-  im.convert(method, req.query['url'], req.query, function(err, path){
-    sendImage(err, res, path)
-  })
+  var match = req.originalUrl.match(modify)
+  console.log(match)
+  var method = match[1]
+  var hash = match[4]
+  var title = match[6] || hash
+  var query = req.originalUrl.match(/\?(.*)/)
+  if (app.hashMatches(hash, query)){
+    var method = req.originalUrl.match(modify)[1]
+    im.convert(method, req.query['url'], req.query, function(err, path){
+      sendImage(err, res, path)
+    })
+  } else {
+    res.send("Hash mismatch")
+  }
 })
 
 // Only listen on $ node app.js

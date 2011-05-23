@@ -18,7 +18,7 @@ module.exports = {
 
   'simple resize works': function(done){
     assert.response(app,
-      { url: '/resize?url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&size=200x400' },
+      { url: '/resize/magic?url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&size=200x400' },
       { status: 200, headers: { 'Content-Type': 'image/gif' }},
       function(res){
         assert.equal(res.body.length, 6620)
@@ -32,7 +32,7 @@ module.exports = {
 
   'simple fit works': function(done){
     assert.response(app,
-      { url: '/fit?url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&size=200x400' },
+      { url: '/fit/magic?url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&size=200x400' },
       { status: 200, headers: { 'Content-Type': 'image/gif' }},
       function(res){
         assert.equal(res.body.length, 18035)
@@ -41,7 +41,7 @@ module.exports = {
 
   'simple crop works': function(done){
     assert.response(app,
-      { url: '/crop?url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&crop=200x400%2B10%2B10' },
+      { url: '/crop/magic?url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&crop=200x400%2B10%2B10' },
       { status: 200, headers: { 'Content-Type': 'image/gif' }},
       function(res){
         assert.equal(res.body.length, 6825)

@@ -30,7 +30,7 @@ To make sure nobody missuses your image-server you can enable hashing in the con
       url: 'http://www.google.com/intl/en_ALL/images/logo.gif',
       size: '200x400'
     }.toQuery()
-    var hash = MD5.digest(query)
+    var hash = MD5.digest(query).first(8)
     var url = "http://localhost:3000/resize/" + hash + "/Very-Nice-Image.gif?" + query
 
     # RUBY
