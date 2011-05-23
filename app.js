@@ -46,16 +46,14 @@ app.get('/', function(req, res){
   res.send('Hello World from node-imageable');
 })
 
-var modify = /^\/(resize|crop|fit)(\/(([^\/\?]+)(\/[^\?]+)?))?/ // resize/hash/title.jpg
+var modify = /^\/(resize|crop|fit)(\/([^\/\?]+))?/ // resize/hash/...
 app.get(modify, function(req, res) {
   var match = req.originalUrl.match(modify)
   var method = match[1]
-  var hash = match[4]
-//  var title = match[6] || hash
+  var hash = match[3]
   var query = req.originalUrl.match(/\?(.*)/)[1]
 
   if (app.hashMatches(hash, query)){
-    var method = req.originalUrl.match(modify)[1]
     im.convert(method, req.query['url'], req.query, function(err, path){
       sendImage(err, res, path)
     })
