@@ -33,22 +33,23 @@ app.get('/', function(req, res){
 })
 
 app.get(/^\/resize.*/, function(req, res){
-  im.convert('resize', req.param('url'), req.param('size'), function(err, path){
+  im.convert('resize', req.query['url'], req.query, function(err, path){
     sendImage(err, res, path)
   })
 })
 
 app.get(/^\/fit.*/, function(req, res){
-  im.convert('fit', req.param('url'), req.param('size'), function(err, path){
+  im.convert('fit', req.query['url'], req.query, function(err, path){
     sendImage(err, res, path)
   })
 })
 
-//app.get(/^\/crop.*/, function(req, res){
-//  im.convert('crop', req.param('url'), req.param('size'), function(err, path){
-//    sendImage(err, res, path)
-//  })
-//})
+app.get(/^\/crop.*/, function(req, res){
+  console.log(req.query)
+  im.convert('crop', req.query['url'], req.query, function(err, path){
+    sendImage(err, res, path)
+  })
+})
 
 
 // Only listen on $ node app.js

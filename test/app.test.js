@@ -39,5 +39,14 @@ module.exports = {
       function(res){
         assert.equal(res.body.length, 18035)
       });
+  },
+
+  'simple crop works': function(done){
+    assert.response(app,
+      { url: '/crop?url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&crop=200x400+10+10' },
+      { status: 200, headers: { 'Content-Type': 'image/gif' }},
+      function(res){
+        assert.equal(res.body.length, 18035)
+      });
   }
 };

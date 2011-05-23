@@ -12,6 +12,12 @@ On-demand image manipulation server in node.js
     # append any fancy name for nice looking urls and image downloads
     http://localhost:3000/fit/-hash-/Fancy-Ignored-Name.gif?url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&size=200x200
 
+    # crop
+    http://localhost:3000/crop?url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&size=200x200
+
+    # crop + resize cropped section
+    http://localhost:3000/crop?url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&size=200x200&resize=100x50
+
 # Start
     NODE_ENV=development node app.js
 

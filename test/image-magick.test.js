@@ -6,7 +6,7 @@ var im = require('../lib/image-magick.js')
 
 module.exports = {
   'simple resize': function(){
-    im.convert('resize', 'test/test.gif', '100x100', function(err, path){
+    im.convert('resize', 'test/test.gif', {size: '100x100'}, function(err, path){
       exec("identify "+path, function(err, stdout){
         assert.includes(stdout, '100x35')
       })
@@ -14,9 +14,17 @@ module.exports = {
   },
 
   'simple fit': function(){
-    im.convert('fit', 'test/test.gif', '100x100', function(err, path){
+    im.convert('fit', 'test/test.gif', {size: '100x100'}, function(err, path){
       exec("identify "+path, function(err, stdout){
         assert.includes(stdout, '100x100')
+      })
+    })
+  },
+
+  'simple crop': function(){
+    im.convert('crop', 'test/test.gif', {crop: '10x15+20+25'}, function(err, path){
+      exec("identify "+path, function(err, stdout){
+        assert.includes(stdout, '10x15')
       })
     })
   }
