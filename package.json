@@ -12,7 +12,7 @@
     "test": "expresso"
   },
   "engines": {
-    "node": "~v0.4.7"
+    "node": ">=v0.4.7"
   },
   "dependencies": {},
   "devDependencies": {}
