@@ -22,7 +22,9 @@ app.hashMatches = function(hash, data){
 function sendImage(err, res, path){
   if(err) return // render 500
   res.contentType(path)
-  res.sendfile(path)
+  res.sendfile(path, function(){
+    exec("rm "+path)
+  })
 }
 
 // Configuration
