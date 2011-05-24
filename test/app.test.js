@@ -80,4 +80,4 @@ vows.describe('app').addBatch({
       }
     }
   }
-}).addBatch(Helpers.clearTmpFolderBatch).run()
+}).addBatch(Helpers.clearTmpFolderBatch).exportTo(module)

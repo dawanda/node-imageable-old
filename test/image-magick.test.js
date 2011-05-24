@@ -53,4 +53,4 @@ vows.describe('image-magick').addBatch({
       assert.includes(stdout, '100x20')
     }
   }
-}).addBatch(Helpers.clearTmpFolderBatch).run()
+}).addBatch(Helpers.clearTmpFolderBatch).exportTo(module)
