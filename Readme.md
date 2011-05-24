@@ -36,6 +36,9 @@ To make sure nobody missuses your image-server you can enable hashing in the con
     # RUBY
     TODO
 
+# Running the tests
+    node test/*.test.js
+
 # TODO
 
  - add 'crop'
