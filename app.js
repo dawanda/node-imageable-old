@@ -1,33 +1,11 @@
 // Module dependencies.
-var express = require('express')
-var app = module.exports = express.createServer()
-var config = JSON.parse(require('fs').readFileSync(__dirname + '/config/config.json'))
-var exec = require('child_process').exec
-var im = require('./lib/image-magick.js')
-var reporter = require('./lib/reporter.js')
-
-app.hash = function(data){
-  return require('crypto').createHash('md5').update(data+config.secret).digest("hex").slice(0,8)
-}
-
-app.hashMatches = function(hash, data){
-  if(config.magic_hash == hash)return true;
-  if(config.secret.toString().length == 0)return true;
-
-  var generatedHash = app.hash(data)
-  if(generatedHash == hash) return true;
-
-  return false;
-}
-
-function sendImage(err, res, path){
-  if(err) return // render 500
-  res.contentType(path)
-  res.sendfile(path, function(){
-    exec("rm "+path)
-  })
-}
-
+var express  = require('express')
+  , app      = module.exports = express.createServer()
+  , Utils    = require("./lib/node-imageable/utils")
+  , utils    = new Utils(__dirname + '/config/config.json')
+  , im       = require('./lib/image-magick')
+  , reporter = require('./lib/reporter')
+  
 // Configuration
 app.configure(function(){
   app.use(express.bodyParser())
@@ -51,16 +29,16 @@ app.get('/', function(req, res){
 var modify = /^\/(resize|crop|fit)(\/([^\/\?]+))?/ // resize/hash/...
 app.get(modify, function(req, res) {
   var start = +new Date()
-
+  
   var match = req.originalUrl.match(modify)
   var method = match[1]
   var hash = match[3]
   var query = req.originalUrl.match(/\?(.*)/)[1]
 
-  if (app.hashMatches(hash, query)){
+  if (utils.hashMatches(hash, query)){
     im.convert(method, req.query['url'], req.query, function(err, path){
       reporter.timing('request', +new Date() - start)
-      sendImage(err, res, path)
+      utils.sendImage(err, res, path)
     })
   } else {
     res.send("Hash mismatch")
@@ -69,7 +47,7 @@ app.get(modify, function(req, res) {
 
 // Only listen on $ node app.js
 if (!module.parent) {
-  app.listen(config.port)
+  app.listen(process.env.PORT || utils.getConfig().port)
   console.log("Express server listening on port %d", app.address().port)
   reporter.startReporting()
 }

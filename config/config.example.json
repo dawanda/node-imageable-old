@@ -1,5 +1,5 @@
 {
   "secret" : "my-very-secret-secret",
-  "magic_hash" : "magic",
+  "magicHash" : "magic",
   "port" : 3000
 }

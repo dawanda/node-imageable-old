@@ -1,71 +1,94 @@
-// Run $ expresso
+var assert    = require('assert')
+  , vows      = require('vows')
+  , Helpers   = require("./helpers")
+  , srcImgUrl = encodeURIComponent("http://www.google.com/intl/en_ALL/images/logo.gif")
+  
 
-var app = require('../app')
-  , assert = require('assert')
-  , fs = require('fs')
-  , exec = require('child_process').exec
-
-
-module.exports = {
-  'GET /': function(done){
-    assert.response(app,
-      { url: '/' },
-      { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8' }},
-      function(res){
-        assert.includes(res.body, 'Hello');
-      });
+vows.describe('app').addBatch({
+  'GET /': {
+    topic: function() { Helpers.requestServer('/', this.callback) },
+    'returns Hello World': function(err, stdout, stderr) {
+      assert.includes(stdout, 'Hello World')
+    }
   },
-
-  'simple resize works': function(done){
-    assert.response(app,
-      { url: '/resize/magic?url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&size=200x400' },
-      { status: 200, headers: { 'Content-Type': 'image/gif' }},
-      function(res){
-        assert.equal(res.body.length, 6620)
-//        var path = [process.cwd(), 'tmp', 'test.gif'].join('/')
-//        fs.writeFileSync(path, res.body)
-//        exec("identify "+path, function(err, stdout){
-//          assert.equal(stdout, '200x400')
-//        })
-      });
+  'GET /resize': {
+    'simple resize': {
+      topic: function() {
+        var cb     = this.callback
+          , target = Helpers.testImagePath
+          
+        Helpers.requestServer("/resize/magic?url=" + srcImgUrl + "&size=200x400", {toFile: target}, function() {
+          Helpers.exec('identify ' + target, cb)
+        })
+      },
+      'resizes the image to 200x80': function(err, stdout) {
+        assert.ok(typeof stdout != 'undefined')
+        assert.includes(stdout, "200x80")
+      }
+    }
   },
-
-  'simple fit works': function(done){
-    assert.response(app,
-      { url: '/fit/magic?url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&size=200x400' },
-      { status: 200, headers: { 'Content-Type': 'image/gif' }},
-      function(res){
-        assert.equal(res.body.length, 18035)
-      });
+  'GET /fit': {
+    'simple fit': {
+      topic: function() {
+        var cb     = this.callback
+          , target = Helpers.testImagePath
+          
+        Helpers.requestServer("/fit/magic?url=" + srcImgUrl + "&size=200x400", {toFile: target}, function() {
+          Helpers.exec('identify ' + target, cb)
+        })
+      },
+      'resizes the image to 200x400': function(err, stdout) {
+        assert.ok(typeof stdout != 'undefined')
+        assert.includes(stdout, "200x400")
+      }
+    }
   },
-
-  'simple crop works': function(done){
-    assert.response(app,
-      { url: '/crop/magic?url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&crop=200x400%2B10%2B10' },
-      { status: 200, headers: { 'Content-Type': 'image/gif' }},
-      function(res){
-        assert.equal(res.body.length, 6825)
-      });
-  },
-
-  'can resize when hash matches': function(done){
-    var query = 'url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&crop=200x400%2B10%2B10'
-    var hash = app.hash(query)
-
-    assert.response(app,
-      { url: '/crop/'+hash+'?'+query },
-      {},
-      function(res){
-        assert.equal(res.body.length, 6825)
-      });
-  },
-
-  'cannot resize when hash does not match': function(done){
-    assert.response(app,
-      { url: '/crop/asdeasd?url=http%3A%2F%2Fwww.google.com%2Fintl%2Fen_ALL%2Fimages%2Flogo.gif&crop=200x400%2B10%2B10' },
-      {},
-      function(res){
-        assert.includes(res.body, "Hash")
-      });
+  'GET /crop': {
+    'simple crop': {
+      topic: function() {
+        var cb     = this.callback
+          , target = Helpers.testImagePath
+          
+        Helpers.requestServer('/crop/magic?url=' + srcImgUrl + '&crop=' + encodeURIComponent('200x400'), {toFile: target}, function() {
+          Helpers.exec('identify ' + target, cb)
+        })
+      },
+      'resizes the image to 200x400': function(err, stdout) {
+        assert.ok(typeof stdout != 'undefined')
+        assert.includes(stdout, "200x400")
+      }
+    }
   }
-};
+}).run()
+
+//   'simple crop works': function(done){
+//     assert.response(app,
+//       { url: '/crop/magic?url=' + srcImgUrl + '&crop=' + encodeURIComponent('200x400+10+10') },
+//       { status: 200, headers: { 'Content-Type': 'image/gif' }},
+//       function(res){
+//         assert.equal(res.body.length, 6825)
+//       }
+//     );
+//   },
+// 
+//   'can resize when hash matches': function(done){
+//     var query = 'url=' + srcImgUrl + '&crop=' + encodeURIComponent('200x400+10+10')
+//     var hash = utils.hash(query)
+// 
+//     assert.response(app,
+//       { url: '/crop/'+hash+'?'+query },
+//       {},
+//       function(res){
+//         assert.equal(res.body.length, 6825)
+//       });
+//   },
+// 
+//   'cannot resize when hash does not match': function(done){
+//     assert.response(app,
+//       { url: '/crop/asdeasd?url=' + srcImgUrl + '&crop=' + encodeURIComponent('200x400+10+10') },
+//       {},
+//       function(res){
+//         assert.includes(res.body, "Hash")
+//       });
+//   }
+// };
