@@ -2,7 +2,6 @@ var assert    = require('assert')
   , vows      = require('vows')
   , Helpers   = require("./helpers")
   , srcImgUrl = encodeURIComponent("http://www.google.com/intl/en_ALL/images/logo.gif")
-  
 
 vows.describe('app').addBatch({
   'GET /': {
@@ -15,7 +14,7 @@ vows.describe('app').addBatch({
     'simple resize': {
       topic: function() {
         var cb     = this.callback
-          , target = Helpers.testImagePath
+          , target = Helpers.testImageTargetPath
           
         Helpers.requestServer("/resize/magic?url=" + srcImgUrl + "&size=200x400", {toFile: target}, function() {
           Helpers.exec('identify ' + target, cb)
@@ -31,7 +30,7 @@ vows.describe('app').addBatch({
     'simple fit': {
       topic: function() {
         var cb     = this.callback
-          , target = Helpers.testImagePath
+          , target = Helpers.testImageTargetPath
           
         Helpers.requestServer("/fit/magic?url=" + srcImgUrl + "&size=200x400", {toFile: target}, function() {
           Helpers.exec('identify ' + target, cb)
@@ -47,7 +46,7 @@ vows.describe('app').addBatch({
     'simple crop': {
       topic: function() {
         var cb     = this.callback
-          , target = Helpers.testImagePath
+          , target = Helpers.testImageTargetPath
           
         Helpers.requestServer('/crop/magic?url=' + srcImgUrl + '&crop=' + encodeURIComponent('200x400+10+10'), {toFile: target}, function() {
           Helpers.exec('identify ' + target, cb)
@@ -61,7 +60,7 @@ vows.describe('app').addBatch({
     },
     'with valid hash': {
       topic: function() {
-        var target  = Helpers.testImagePath
+        var target  = Helpers.testImageTargetPath
           , query   = 'url=' + srcImgUrl + '&crop=' + encodeURIComponent('200x400+10+10')
           , hash    = Helpers.utils.hash(query)
           
@@ -73,7 +72,7 @@ vows.describe('app').addBatch({
     },
     'with invalid hash': {
       topic: function() {
-        var target  = Helpers.testImagePath
+        var target  = Helpers.testImageTargetPath
         Helpers.requestServer('/crop/asdeasd?url=' + srcImgUrl + '&crop=' + encodeURIComponent('200x400+10+10'), this.callback)
       },
       "doesn't work": function(err, stdout) {

@@ -38,6 +38,10 @@ Helpers.__defineGetter__('random', function() {
   return ~~(Math.random() * 999999)
 })
 
-Helpers.__defineGetter__('testImagePath', function() {
+Helpers.__defineGetter__('testImageTargetPath', function() {
   return process.cwd() + "/test/tmp/test" + Helpers.random +".gif"
+})
+
+Helpers.__defineGetter__('testImagePath', function() {
+  return process.cwd() + "/test/assets/test.gif"
 })
