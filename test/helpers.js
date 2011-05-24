@@ -6,7 +6,19 @@ var Helpers = module.exports = {
   utils:  new Utils(__dirname + '/../config/config.example.json'),
   
   serverRequests: 0,
-  
+ 
+  clearTmpFolder: function() {
+    Helpers.exec('rm ' + process.cwd() + "/test/tmp/*")
+  },
+  clearTmpFolderBatch: {
+    'clear': {
+      topic: function() {
+        Helpers.clearTmpFolder()
+        this.callback()
+      },
+      'make it so': function(){}
+    }
+  },
   requestServer: function(path, _options, _callback) {
     var app      = require('../app')
       , port     = !!app.fd ? app.address().port : (~~(Math.random() * 5000) + 2000)
