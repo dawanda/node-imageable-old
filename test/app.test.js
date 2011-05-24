@@ -49,46 +49,36 @@ vows.describe('app').addBatch({
         var cb     = this.callback
           , target = Helpers.testImagePath
           
-        Helpers.requestServer('/crop/magic?url=' + srcImgUrl + '&crop=' + encodeURIComponent('200x400'), {toFile: target}, function() {
+        Helpers.requestServer('/crop/magic?url=' + srcImgUrl + '&crop=' + encodeURIComponent('200x400+10+10'), {toFile: target}, function() {
           Helpers.exec('identify ' + target, cb)
         })
       },
-      'resizes the image to 200x400': function(err, stdout) {
+      'resizes the image to 200x100': function(err, stdout) {
+        assert.equal('wtf should it do?', 'wth')
         assert.ok(typeof stdout != 'undefined')
         assert.includes(stdout, "200x400")
+      }
+    },
+    'with valid hash': {
+      topic: function() {
+        var target  = Helpers.testImagePath
+          , query   = 'url=' + srcImgUrl + '&crop=' + encodeURIComponent('200x400+10+10')
+          , hash    = Helpers.utils.hash(query)
+          
+        Helpers.requestServer('/crop/' + hash + '?' + query, this.callback)
+      },
+      'works nicely': function(err, stdout) {
+        assert.includes(stdout, 'GIF89')
+      }
+    },
+    'with invalid hash': {
+      topic: function() {
+        var target  = Helpers.testImagePath
+        Helpers.requestServer('/crop/asdeasd?url=' + srcImgUrl + '&crop=' + encodeURIComponent('200x400+10+10'), this.callback)
+      },
+      "doesn't work": function(err, stdout) {
+        assert.includes(stdout, "Hash mismatch")
       }
     }
   }
 }).run()
-
-//   'simple crop works': function(done){
-//     assert.response(app,
-//       { url: '/crop/magic?url=' + srcImgUrl + '&crop=' + encodeURIComponent('200x400+10+10') },
-//       { status: 200, headers: { 'Content-Type': 'image/gif' }},
-//       function(res){
-//         assert.equal(res.body.length, 6825)
-//       }
-//     );
-//   },
-// 
-//   'can resize when hash matches': function(done){
-//     var query = 'url=' + srcImgUrl + '&crop=' + encodeURIComponent('200x400+10+10')
-//     var hash = utils.hash(query)
-// 
-//     assert.response(app,
-//       { url: '/crop/'+hash+'?'+query },
-//       {},
-//       function(res){
-//         assert.equal(res.body.length, 6825)
-//       });
-//   },
-// 
-//   'cannot resize when hash does not match': function(done){
-//     assert.response(app,
-//       { url: '/crop/asdeasd?url=' + srcImgUrl + '&crop=' + encodeURIComponent('200x400+10+10') },
-//       {},
-//       function(res){
-//         assert.includes(res.body, "Hash")
-//       });
-//   }
-// };
