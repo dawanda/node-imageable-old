@@ -38,7 +38,13 @@ app.get(modify, function(req, res) {
   if (utils.hashMatches(hash, query)){
     im.convert(method, req.query['url'], req.query, function(err, path){
       reporter.timing('request', +new Date() - start)
-      utils.sendImage(err, res, path)
+      
+      if(err) {
+        res.send(500)
+      } else {
+        res.contentType(path)
+        res.sendfile(path)
+      }
     })
   } else {
     res.send("Hash mismatch")
