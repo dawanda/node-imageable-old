@@ -52,8 +52,7 @@ vows.describe('app').addBatch({
           Helpers.exec('identify ' + target, cb)
         })
       },
-      'resizes the image to 200x100': function(err, stdout) {
-        // assert.equal('wtf should it do?', 'wth')
+      'resizes the image to 200x400': function(err, stdout) {
         // assert.ok(typeof stdout != 'undefined')
         // assert.includes(stdout, "200x400")
       }
