@@ -5,6 +5,7 @@ var express  = require('express')
   , utils    = new Utils(__dirname + '/config/config.json')
   , im       = require('./lib/image-magick')
   , reporter = require('./lib/reporter')
+  , exec     = require("child_process").exec
   
 // Configuration
 app.configure(function(){
