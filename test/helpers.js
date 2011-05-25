@@ -19,6 +19,13 @@ var Helpers = module.exports = {
       'make it so': function(){}
     }
   },
+  
+  /*
+    path: the path you want to request
+    _options: a hash with options, possible options:
+                - toFile: will write the response into a file (e.g. for binary stuff)
+    _callback: a function to call after everything is done
+  */
   requestServer: function(path, _options, _callback) {
     var app      = require('../app')
       , port     = !!app.fd ? app.address().port : (~~(Math.random() * 5000) + 2000)
@@ -33,7 +40,7 @@ var Helpers = module.exports = {
       app.listen(port)
       console.log("Express server listening on port %d", app.address().port)
     }
-
+    
     console.log(cmd)
 
     Helpers.exec(cmd, function(err, stdout, stderr) {
