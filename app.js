@@ -43,7 +43,7 @@ app.get(modify, function(req, res) {
         res.send(500)
       } else {
         res.contentType(path)
-        res.sendfile(path)
+        res.sendfile(path, function() { exec('rm ' + path) })
       }
     })
   } else {
